@@ -364,22 +364,22 @@
             <div class="prize-card estrategista">
                 <h3>🏅 ESTRATEGISTA</h3>
                 <p>Top 4 Jogadores</p>
-                <small>Acumulativo com outros prêmios</small>
+                <small>Prêmio único por jogador</small>
             </div>
             <div class="prize-card essencial">
                 <h3>⭐ ESSENCIAL</h3>
                 <p>Top 15 Jogadores</p>
-                <small>Acumulativo com outros prêmios</small>
+                <small>Prêmio único por jogador</small>
             </div>
             <div class="prize-card elite">
                 <h3>🎖️ MEMBRO ELITE</h3>
                 <p>Top 30 Jogadores</p>
-                <small>Acumulativo com outros prêmios</small>
+                <small>Prêmio único por jogador</small>
             </div>
             <div class="prize-card valioso">
                 <h3>🏆 MEMBRO VALIOSO</h3>
                 <p>Top 50 Jogadores</p>
-                <small>Acumulativo com outros prêmios</small>
+                <small>Prêmio único por jogador</small>
             </div>
         </div>
         
@@ -649,28 +649,31 @@
                    (scores.faccao * weights.faccao);
         }
 
-        // Função para determinar prêmios (acumulativos)
+        // Função para determinar prêmios (não acumulativos - apenas 1 prêmio por jogador)
         function getPrizes(rank) {
-            const prizes = [];
-            
-            if (rank <= 4) prizes.push('ESTRATEGISTA');
-            if (rank <= 15) prizes.push('ESSENCIAL');
-            if (rank <= 30) prizes.push('MEMBRO ELITE');
-            if (rank <= 50) prizes.push('MEMBRO VALIOSO');
-            
-            if (prizes.length === 0) return { display: '-', class: '' };
-            
-            // Determinar classe visual baseada no melhor prêmio
+            let prize = '';
             let displayClass = '';
-            if (prizes.includes('ESTRATEGISTA')) displayClass = 'top-4';
-            else if (prizes.includes('ESSENCIAL')) displayClass = 'top-15';
-            else if (prizes.includes('MEMBRO ELITE')) displayClass = 'top-30';
-            else if (prizes.includes('MEMBRO VALIOSO')) displayClass = 'top-50';
+            
+            if (rank <= 4) {
+                prize = 'ESTRATEGISTA';
+                displayClass = 'top-4';
+            } else if (rank <= 15) {
+                prize = 'ESSENCIAL';
+                displayClass = 'top-15';
+            } else if (rank <= 30) {
+                prize = 'MEMBRO ELITE';
+                displayClass = 'top-30';
+            } else if (rank <= 50) {
+                prize = 'MEMBRO VALIOSO';
+                displayClass = 'top-50';
+            } else {
+                return { display: '-', class: '', count: 0 };
+            }
             
             return { 
-                display: prizes.join(' + '), 
+                display: prize, 
                 class: displayClass,
-                count: prizes.length 
+                count: 1 
             };
         }
 
