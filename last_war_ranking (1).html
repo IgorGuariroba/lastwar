@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Premiação Last War Survival</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ffd700, #ff6b35);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .weights {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .weight-card {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .weight-card h3 {
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+        
+        .prizes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .prize-card {
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .estrategista { background: linear-gradient(135deg, #ffd700, #ffb347); color: #000; }
+        .essencial { background: linear-gradient(135deg, #c0c0c0, #a8a8a8); color: #000; }
+        .elite { background: linear-gradient(135deg, #cd7f32, #b8860b); color: #fff; }
+        .valioso { background: linear-gradient(135deg, #4169e1, #1e90ff); color: #fff; }
+        
+        .ranking-table {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            padding: 15px 10px;
+            text-align: left;
+            font-weight: bold;
+            color: #ffd700;
+            border-bottom: 2px solid #ffd700;
+        }
+        
+        tr:nth-child(even) {
+            background: rgba(255,255,255,0.05);
+        }
+        
+        tr:hover {
+            background: rgba(255,255,255,0.1);
+            transform: scale(1.01);
+            transition: all 0.3s ease;
+        }
+        
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .rank {
+            font-weight: bold;
+            font-size: 1.2em;
+            text-align: center;
+            width: 60px;
+        }
+        
+        .player-name {
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .score {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .premio {
+            text-align: center;
+            font-weight: bold;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            line-height: 1.2;
+        }
+        
+        .top-4 { background: linear-gradient(135deg, #ffd700, #ffb347); color: #000; }
+        .top-15 { background: linear-gradient(135deg, #c0c0c0, #a8a8a8); color: #000; }
+        .top-30 { background: linear-gradient(135deg, #cd7f32, #b8860b); color: #fff; }
+        .top-50 { background: linear-gradient(135deg, #4169e1, #1e90ff); color: #fff; }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            
+            .header h1 { 
+                font-size: 1.8em; 
+                margin-bottom: 8px;
+            }
+            
+            .header p { font-size: 0.9em; }
+            
+            .weights, .prizes { 
+                grid-template-columns: 1fr; 
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+            
+            .weight-card, .prize-card {
+                padding: 12px;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                margin-top: 20px;
+            }
+            
+            .stat-card {
+                padding: 15px;
+            }
+            
+            .stat-number { font-size: 1.5em; }
+            
+            /* Tabela responsiva para mobile */
+            .ranking-table {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            table {
+                min-width: 800px;
+                font-size: 0.85em;
+            }
+            
+            th, td { 
+                padding: 8px 4px; 
+                white-space: nowrap;
+            }
+            
+            .player-name {
+                min-width: 120px;
+                max-width: 120px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            
+            .score {
+                min-width: 80px;
+                font-size: 0.8em;
+            }
+            
+            .premio {
+                min-width: 100px;
+                font-size: 0.7em;
+                padding: 6px 8px;
+                line-height: 1.1;
+            }
+            
+            .rank {
+                min-width: 40px;
+                font-size: 1em;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body { padding: 5px; }
+            
+            .header {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+            
+            .header h1 { 
+                font-size: 1.5em; 
+                line-height: 1.2;
+            }
+            
+            .weight-card h3, .prize-card h3 {
+                font-size: 1.1em;
+                margin-bottom: 5px;
+            }
+            
+            .weight-card p, .prize-card p {
+                font-size: 0.9em;
+                margin-bottom: 3px;
+            }
+            
+            .weight-card small, .prize-card small {
+                font-size: 0.75em;
+            }
+            
+            table {
+                min-width: 700px;
+                font-size: 0.8em;
+            }
+            
+            th, td { 
+                padding: 6px 3px; 
+            }
+            
+            .player-name {
+                min-width: 100px;
+                max-width: 100px;
+            }
+            
+            .score {
+                min-width: 70px;
+                font-size: 0.75em;
+            }
+            
+            .premio {
+                min-width: 90px;
+                font-size: 0.65em;
+                padding: 4px 6px;
+            }
+            
+            .rank {
+                min-width: 35px;
+                font-size: 0.9em;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .stat-card {
+                padding: 12px;
+            }
+            
+            .stat-number { font-size: 1.3em; }
+        }
+        
+        /* Scroll horizontal indicators */
+        .ranking-table::-webkit-scrollbar {
+            height: 8px;
+        }
+        
+        .ranking-table::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+        
+        .ranking-table::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #ffd700, #ff6b35);
+            border-radius: 4px;
+        }
+        
+        .ranking-table::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, #ffed4e, #ff8c42);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 Sistema de Premiação - Last War Survival 🏆</h1>
+            <p>Ranking Final da Temporada com Distribuição de Prêmios</p>
+            <p>Mebros 🛡️ R4 e 👑 R5 Receberam Dez milhões de vantagem</p>
+            <p>Sobre 🥉 Conquista do Cobre</p>
+        </div>
+        
+        <div class="weights">
+            <div class="weight-card">
+                <h3>🏰 Captura de Fortalezas</h3>
+                <p>Peso: <strong>3.0</strong> (Mais Importante)</p>
+            </div>
+            <div class="weight-card">
+                <h3>🥉 Conquista do Cobre</h3>
+                <p>Peso: <strong>2.5</strong> (Muito Importante)</p>
+            </div>
+            <div class="weight-card">
+                <h3>⚔️ Derrota da Facção Inimiga</h3>
+                <p>Peso: <strong>1.5</strong> (Importante)</p>
+            </div>
+            <div class="weight-card">
+                <h3>🤝 Assistência Mútua</h3>
+                <p>Peso: <strong>1.0</strong> (Base)</p>
+            </div>
+        </div>
+        
+        <div class="prizes">
+            <div class="prize-card estrategista">
+                <h3>🏅 ESTRATEGISTA</h3>
+                <p>Top 4 Jogadores</p>
+                <small>Acumulativo com outros prêmios</small>
+            </div>
+            <div class="prize-card essencial">
+                <h3>⭐ ESSENCIAL</h3>
+                <p>Top 15 Jogadores</p>
+                <small>Acumulativo com outros prêmios</small>
+            </div>
+            <div class="prize-card elite">
+                <h3>🎖️ MEMBRO ELITE</h3>
+                <p>Top 30 Jogadores</p>
+                <small>Acumulativo com outros prêmios</small>
+            </div>
+            <div class="prize-card valioso">
+                <h3>🏆 MEMBRO VALIOSO</h3>
+                <p>Top 50 Jogadores</p>
+                <small>Acumulativo com outros prêmios</small>
+            </div>
+        </div>
+        
+        <div class="ranking-table">
+            <div style="margin-bottom: 10px; text-align: center; color: #ffd700; font-size: 0.9em; display: none;" id="scrollHint">
+                📱 Deslize horizontalmente para ver todos os dados
+            </div>
+            <table id="rankingTable">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Jogador</th>
+                        <th>Assistência Mútua</th>
+                        <th>Captura Fortalezas</th>
+                        <th>Conquista Cobre</th>
+                        <th>Derrota Facção</th>
+                        <th>Pontuação Final</th>
+                        <th>Prêmio</th>
+                    </tr>
+                </thead>
+                <tbody id="rankingBody">
+                    <!-- Dados serão inseridos aqui pelo JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalPlayers">0</div>
+                <div>Total de Jogadores</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="premiados">0</div>
+                <div>Jogadores Premiados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="maxScore">0</div>
+                <div>Maior Pontuação</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="avgScore">0</div>
+                <div>Pontuação Média</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados dos jogadores organizados
+        const playersData = {
+            // Assistência Mútua
+            assistencia: {
+                "⚔️ R3 - GustavoMilton": 52912310,
+                "⚔️ R3 - Jess ATAK": 42958610,
+                "🛡️ R4 - Igor SP": 41401040,
+                "⚔️ R3 - Andersonsb": 33117750,
+                "⚔️ R3 - CleberBessa": 28201210,
+                "⚔️ R3 - Diegopai": 25897220,
+                "🛡️ R4 - 123marc": 25764000,
+                "🛡️ R4 - conti 1": 24067420,
+                "🛡️ R4 - mamuthulengo": 21908190,
+                "🛡️ R4 - Sir Luciano": 17510670,
+                "⚔️ R3 - Fafoss": 17155800,
+                "🛡️ R4 - JRazec": 15802300,
+                "⚔️ R3 - Rapha Flu": 15280990,
+                "⚔️ R3 - Rjsouto": 14868340,
+                "⚔️ R3 - Marcelo Niklaus": 14372000,
+                "⚔️ R3 - Zack07": 12945550,
+                "🛡️ R4 - Master Wolf": 12807500,
+                "⚔️ R3 - Tauchmann": 12702730,
+                "⚔️ R3 - riick": 11441840,
+                "⚔️ R3 - perreco": 11430430,
+                "⚔️ R3 - Stylnew": 9782020,
+                "⚔️ R3 - LiraFalcon": 9755190,
+                "⚔️ R3 - HsouzaAXA": 9591100,
+                "⚔️ R3 - LeoPetri": 9513820,
+                "⚔️ R3 - Tixé": 8762740,
+                "⚔️ R3 - BlackHawkk": 7198410,
+                "⚔️ R3 - Trayyy": 7181130,
+                "⚔️ R3 - jrsteles": 7055280,
+                "⚔️ R3 - dudu07": 7027080,
+                "⚔️ R3 - Garcia 87": 6889870,
+                "⚔️ R3 - MaxOo89": 6666610,
+                "👑 R5 - GessicaMartinsdaS": 6566190,
+                "⚔️ R3 - Renandias97": 6441180,
+                "🛡️ R4 - pereirafunk": 5140250,
+                "⚔️ R3 - LuizVitor": 4057070,
+                "⚔️ R3 - chorstick": 3604350,
+                "⚔️ R3 - Lucianog": 3400800,
+                "R2 - willinsfo": 3224130,
+                "⚔️ R3 - Erikonha": 2986610,
+                "⚔️ R3 - AguinaldoNETO": 2940100,
+                "⚔️ R3 - guiobrabo": 2880760,
+                "⚔️ R3 - Harry38": 2798210,
+                "⚔️ R3 - Dayaneavolcov": 2648970,
+                "⚔️ R3 - NewTT": 2568470,
+                "⚔️ R3 - EnzoMartins": 2081010,
+                "⚔️ R3 - GusMar": 1896670,
+                "🛡️ R4 - IsabellaPici": 1823210,
+                "⚔️ R3 - Malheiros2": 1807940,
+                "sidnbar": 1789180,
+                "🛡️ R4 - Rick3108": 1608330
+            },
+            
+            // Captura de Fortalezas
+            fortalezas: {
+                "🛡️ R4 - JRazec": 2383395,
+                "🛡️ R4 - mamuthulengo": 2355100,
+                "🛡️ R4 - Igor SP": 1389952,
+                "⚔️ R3 - CleberBessa": 952600,
+                "⚔️ R3 - Tauchmann": 920000,
+                "🛡️ R4 - Master Wolf": 830800,
+                "🛡️ R4 - Rick3108": 791500,
+                "🛡️ R4 - conti 1": 750373,
+                "⚔️ R3 - Diegopai": 734070,
+                "🛡️ R4 - 123marc": 706086,
+                "🛡️ R4 - Sir Luciano": 625000,
+                "⚔️ R3 - Marcelo Niklaus": 617106,
+                "⚔️ R3 - MaxOo89": 606000,
+                "⚔️ R3 - Lucianog": 514000,
+                "🛡️ R4 - pereirafunk": 506700,
+                "⚔️ R3 - Jess ATAK": 470000,
+                "⚔️ R3 - BlackHawkk": 415103,
+                "⚔️ R3 - ⚔️ R3 - Harry38": 340000,
+                "⚔️ R3 - Andersonsb": 337512,
+                "⚔️ R3 - Zack07": 292592,
+                "⚔️ R3 - LuizVitor": 265800,
+                "⚔️ R3 - Tixé": 260000,
+                "⚔️ R3 - Rapha Flu": 235000,
+                "⚔️ R3 - LarsOliver": 216000,
+                "🛡️ R4 - IsabellaPici": 195000,
+                "⚔️ R3 - NewTT": 162000,
+                "⚔️ R3 - Dayaneavolcov": 154000,
+                "⚔️ R3 - riick": 137500,
+                "⚔️ R3 - Rjsouto": 129000,
+                "⚔️ R3 - AguinaldoNETO": 128500,
+                "⚔️ R3 - Garcia 87": 125000,
+                "⚔️ R3 - Malheiros2": 117000,
+                "⚔️ R3 - GusMar": 106900,
+                "👑 R5 - GessicaMartinsdaS": 105000,
+                "R2 - willinsfo": 99000,
+                "⚔️ R3 - HsouzaAXA": 90000,
+                "⚔️ R3 - Renandias97": 70000,
+                "⚔️ R3 - EnzoMartins": 61000,
+                "⚔️ R3 - FireTrudeau": 52000,
+                "⚔️ R3 - PAPAKU": 52000,
+                "⚔️ R3 - guiobrabo": 49200,
+                "⚔️ R3 - GustavoMilton": 47000,
+                "⚔️ R3 - jrsteles": 46000,
+                "⚔️ R3 - Fafoss": 45600,
+                "⚔️ R3 - Trayyy": 45000,
+                "HELLO KITTY cos": 43000,
+                "⚔️ R3 - LiraFalcon": 40700,
+                "⚔️ R3 - Erikonha": 36000,
+                "Aguia03": 31000,
+                "⚔️ R3 - Sfericus": 30000
+            },
+            
+            // Conquista do Cobre
+            cobre: {
+                "🛡️ R4 - mamuthulengo": 2179479 + 10000000,
+                "🛡️ R4 - Igor SP": 1755660 + 10000000,
+                "🛡️ R4 - Master Wolf": 1181167 + 10000000,
+                "⚔️ R3 - BlackHawkk": 1053937,
+                "⚔️ R3 - Andersonsb": 600000,
+                "🛡️ R4 - IsabellaPici": 563911 + 10000000,
+                "⚔️ R3 - Diegopai": 553414,
+                "🛡️ R4 - JRazec": 552892 + 10000000,
+                "⚔️ R3 - Lucianog": 307500,
+                "🛡️ R4 - Sir Luciano": 304608 + 10000000,
+                "⚔️ R3 - Malheiros2": 277200,
+                "⚔️ R3 - NewTT": 236764,
+                "🛡️ R4 - Rick3108": 236122 + 10000000,
+                "⚔️ R3 - GustavoMilton": 220800,
+                "⚔️ R3 - Marcelo Niklaus": 201000,
+                "⚔️ R3 - LeoPetri": 201000,
+                "👑 R5 - GessicaMartinsdaS": 201000 + 10000000,
+                "🛡️ R4 - pereirafunk": 158590 + 10000000 + 10000000,
+                "⚔️ R3 - HsouzaAXA": 154953,
+                "🛡️ R4 - conti 1": 142208 + 10000000,
+                "⚔️ R3 - CleberBessa": 141700,
+                "⚔️ R3 - Renandias97": 102500,
+                "⚔️ R3 - Fafoss": 101500,
+                "🛡️ R4 - 123marc": 81192 + 10000000,
+                "⚔️ R3 - Tauchmann": 38900,
+                "⚔️ R3 - Rjsouto": 27000,
+                "⚔️ R3 - LuizVitor": 21000,
+                "⚔️ R3 - FireTrudeau": 20000,
+                "⚔️ R3 - Erikonha": 8400,
+                "⚔️ R3 - Rapha Flu": 2304
+            },
+            
+            // Derrota da Facção Inimiga
+            faccao: {
+                "🛡️ R4 - mamuthulengo": 23609619,
+                "🛡️ R4 - Igor SP": 12808392,
+                "🛡️ R4 - Sir Luciano": 7743336,
+                "🛡️ R4 - JRazec": 5717850,
+                "⚔️ R3 - BlackHawkk": 5346861,
+                "🛡️ R4 - pereirafunk": 3986667,
+                "🛡️ R4 - Master Wolf": 3743622,
+                "🛡️ R4 - IsabellaPici": 3060746,
+                "🛡️ R4 - Rick3108": 2001420,
+                "🛡️ R4 - 123marc": 1416480,
+                "⚔️ R3 - Tauchmann": 1370094,
+                "⚔️ R3 - Diegopai": 1320183,
+                "⚔️ R3 - Rjsouto": 1232070,
+                "🛡️ R4 - conti 1": 1230228,
+                "⚔️ R3 - Malheiros2": 1102176,
+                "⚔️ R3 - LuizVitor": 668688,
+                "⚔️ R3 - Andersonsb": 583128,
+                "⚔️ R3 - Marcelo Niklaus": 520581,
+                "⚔️ R3 - LeoPetri": 472662,
+                "⚔️ R3 - EnzoMartins": 375507,
+                "⚔️ R3 - GustavoMilton": 215739,
+                "⚔️ R3 - NewTT": 192654,
+                "⚔️ R3 - CleberBessa": 134871,
+                "⚔️ R3 - HsouzaAXA": 112203,
+                "⚔️ R3 - MaxOo89": 79398,
+                "⚔️ R3 - Renandias97": 53787,
+                "⚔️ R3 - Erikonha": 34089,
+                "⚔️ R3 - Harry38": 31845,
+                "⚔️ R3 - Rapha Flu": 23298,
+                "👑 R5 - GessicaMartinsdaS": 22539,
+                "⚔️ R3 - LarsOliver": 8415,
+                "⚔️ R3 - PAPAKU": 7755,
+                "⚔️ R3 - guiobrabo": 7332,
+                "⚔️ R3 - LiraFalcon": 6996,
+                "⚔️ R3 - Sfericus": 6336,
+                "⚔️ R3 - riick": 3729,
+                "⚔️ R3 - jrsteles": 3531,
+                "⚔️ R3 - perreco": 3432,
+                "⚔️ R3 - GusMar": 3333,
+                "Aguia03": 2970,
+                "⚔️ R3 - dudu07": 2952,
+                "⚔️ R3 - Zack07": 2772,
+                "⚔️ R3 - Garcia 87": 2178,
+                "⚔️ R3 - Lucianog": 1914,
+                "⚔️ R3 - Dayaneavolcov": 1782,
+                "⚔️ R3 - Jess ATAK": 1386,
+                "⚔️ R3 - Tixé": 990,
+                "⚔️ R3 - Trayyy": 924,
+                "Barceloss": 792,
+                "⚔️ R3 - Fafoss": 264
+            }
+        };
+
+        // Pesos das categorias
+        const weights = {
+            assistencia: 1.0,
+            fortalezas: 3.0,
+            cobre: 2.5,
+            faccao: 1.5
+        };
+
+        // Função para calcular pontuação final
+        function calculateFinalScore(player) {
+            const scores = {
+                assistencia: playersData.assistencia[player] || 0,
+                fortalezas: playersData.fortalezas[player] || 0,
+                cobre: playersData.cobre[player] || 0,
+                faccao: playersData.faccao[player] || 0
+            };
+            
+            return (scores.assistencia * weights.assistencia) +
+                   (scores.fortalezas * weights.fortalezas) +
+                   (scores.cobre * weights.cobre) +
+                   (scores.faccao * weights.faccao);
+        }
+
+        // Função para determinar prêmios (acumulativos)
+        function getPrizes(rank) {
+            const prizes = [];
+            
+            if (rank <= 4) prizes.push('ESTRATEGISTA');
+            if (rank <= 15) prizes.push('ESSENCIAL');
+            if (rank <= 30) prizes.push('MEMBRO ELITE');
+            if (rank <= 50) prizes.push('MEMBRO VALIOSO');
+            
+            if (prizes.length === 0) return { display: '-', class: '' };
+            
+            // Determinar classe visual baseada no melhor prêmio
+            let displayClass = '';
+            if (prizes.includes('ESTRATEGISTA')) displayClass = 'top-4';
+            else if (prizes.includes('ESSENCIAL')) displayClass = 'top-15';
+            else if (prizes.includes('MEMBRO ELITE')) displayClass = 'top-30';
+            else if (prizes.includes('MEMBRO VALIOSO')) displayClass = 'top-50';
+            
+            return { 
+                display: prizes.join(' + '), 
+                class: displayClass,
+                count: prizes.length 
+            };
+        }
+
+        // Função para formatar números
+        function formatNumber(num) {
+            return new Intl.NumberFormat('pt-BR').format(Math.round(num));
+        }
+
+        // Obter todos os jogadores únicos
+        const allPlayers = new Set();
+        Object.values(playersData).forEach(category => {
+            Object.keys(category).forEach(player => allPlayers.add(player));
+        });
+
+        // Calcular ranking
+        const ranking = Array.from(allPlayers).map(player => ({
+            name: player,
+            assistencia: playersData.assistencia[player] || 0,
+            fortalezas: playersData.fortalezas[player] || 0,
+            cobre: playersData.cobre[player] || 0,
+            faccao: playersData.faccao[player] || 0,
+            finalScore: calculateFinalScore(player)
+        })).sort((a, b) => b.finalScore - a.finalScore);
+
+        // Preencher tabela
+        const tbody = document.getElementById('rankingBody');
+        ranking.forEach((player, index) => {
+            const rank = index + 1;
+            const prizes = getPrizes(rank);
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="rank">${rank}</td>
+                <td class="player-name">${player.name}</td>
+                <td class="score">${formatNumber(player.assistencia)}</td>
+                <td class="score">${formatNumber(player.fortalezas)}</td>
+                <td class="score">${formatNumber(player.cobre)}</td>
+                <td class="score">${formatNumber(player.faccao)}</td>
+                <td class="score"><strong>${formatNumber(player.finalScore)}</strong></td>
+                <td class="premio ${prizes.class}">${prizes.display}</td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        // Atualizar estatísticas
+        const totalPlayers = ranking.length;
+        const premiados = ranking.filter((_, index) => index < 50).length;
+        const maxScore = ranking[0]?.finalScore || 0;
+        const avgScore = ranking.reduce((sum, player) => sum + player.finalScore, 0) / totalPlayers;
+
+        document.getElementById('totalPlayers').textContent = totalPlayers;
+        document.getElementById('premiados').textContent = premiados;
+        document.getElementById('maxScore').textContent = formatNumber(maxScore);
+        document.getElementById('avgScore').textContent = formatNumber(avgScore);
+        
+        // Mostrar dica de scroll em dispositivos móveis
+        if (window.innerWidth <= 768) {
+            document.getElementById('scrollHint').style.display = 'block';
+        }
+        
+        // Esconder dica após scroll
+        const tableContainer = document.querySelector('.ranking-table');
+        let scrollTimeout;
+        tableContainer.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                document.getElementById('scrollHint').style.display = 'none';
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
